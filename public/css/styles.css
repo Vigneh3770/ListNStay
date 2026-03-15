@@ -1,0 +1,123 @@
+body {
+  font-family: "Quicksand", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.container {
+  flex: 1;
+}
+.fa-compass {
+  font-size: 2rem;
+  color: #fd5c63;
+}
+
+.nav-link {
+  color: #222222;
+}
+
+.navbar {
+  position: sticky-top;
+}
+
+/*footer*/
+
+.f_container {
+  height: 4rem;
+  background-color: beige;
+  display: flex;
+  justify-content: space-between; /* Pushes left and right groups apart */
+  align-items: center;
+  font-size: 1rem;
+  position: sticky bottom;
+}
+.f_terms_container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 2rem;
+  font-size: 1.15rem;
+}
+
+.f_terms_container a {
+  text-decoration: none;
+
+  color: #222222;
+}
+
+.f_social_container {
+  padding-right: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.15rem;
+}
+.f_terms_container a:hover {
+  text-decoration: underline;
+}
+
+.f_social_container a {
+  text-decoration: none;
+  display: inline;
+  color: #222222;
+}
+
+.f_social_container a :hover {
+  text-decoration: underline;
+}
+
+/* cards */
+
+.row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card img {
+  height: 15rem;
+  width: 100%;
+  border-radius: 0.5rem;
+}
+
+.card {
+  border: none;
+  display: flex;
+  justify-content: center;
+  margin: 0%;
+  padding: 0.5rem;
+}
+
+.card-body {
+  padding: 0px;
+}
+
+.card-text {
+  margin: 0px;
+}
+
+.listing-link {
+  text-decoration: none;
+}
+
+/* card effects */
+
+.card-img-overlay:hover {
+  background-color: aliceblue;
+  opacity: 0.1;
+}
+.add_btn {
+  background-color: #fd5c63;
+  border: none;
+  color: white;
+}
+
+/* .err_content {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+} */
