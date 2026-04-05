@@ -1,20 +1,35 @@
+// if (process.env.NODE_ENV != "production") {
+//   await import("dotenv/config");
+// }
+
+import "dotenv/config";
 import express from "express";
 import path from "path";
 import methodOverride from "method-override";
 import { fileURLToPath } from "url";
 import mongoose from "mongoose";
-import Listings from "./models/listing.js";
 import ejsMate from "ejs-mate";
-import { access } from "fs";
+import session from "express-session";
+import cookieParser from "cookie-parser";
+import flash from "connect-flash";
+import passport from "passport";
+
+import LocalStrategy from "passport-local";
 import wrapAsync from "./utils/wrapAsync.js";
 import expressErrors from "./utils/expressErrors.js";
-import listingSchema from "./schema.js";
+import listingsRouter from "./routes/listing.js";
+import reviewsRouter from "./routes/reviews.js";
+import userRouter from "./routes/users.js";
+import User from "./models/user.js";
+import dns from "dns";
+import { MongoStore } from "connect-mongo";
 
 let __filename = fileURLToPath(import.meta.url);
 let __dirname = path.dirname(__filename);
 
 const app = express();
 const port = 8000;
+const dbUrl = process.env.ATLASDB_URL;
 
 //view engines
 app.set("views", path.join(__dirname, "views"));
@@ -27,18 +42,60 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 
-app.listen(port, () => {
-  console.log(`Server running on port port ${port}`);
-});
-
 main()
   .then(() => {
     console.log("DB connected");
   })
   .catch((err) => console.log(err));
 
+app.use(cookieParser("code"));
+
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  crypto: {
+    secret: process.env.SECRET,
+  },
+  touchAfter: 24 * 3600,
+});
+
+store.on("error", () => {
+  console.log("error in Mongo Session Store", err);
+});
+
+const sessionOptions = {
+  secret: process.env.SECRET,
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+  },
+};
+
+app.use(session(sessionOptions));
+app.use(flash());
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  res.locals.deletion = req.flash("deletion");
+  res.locals.updation = req.flash("updation");
+  res.locals.err = req.flash("err");
+  res.locals.currUser = req.user;
+  next();
+});
+
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
+
+//Mongo Connection
 async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/wonderlust");
+  await mongoose.connect(dbUrl);
 }
 
 // const token = (req, res, next) => {
@@ -50,98 +107,34 @@ async function main() {
 //   }
 // };
 
-app.use((req, res, next) => {
-  req.time = new Date().toString();
+// routes
 
-  next();
-});
+// app.get("/registerUser", async (req, res) => {
+//   let newUser = new User({
+//     email: "student@gmail.com",
+//     username: "Viggi",
+//   });
+//   let user = await User.register(newUser, "helloworld");
+
+//   res.send(user);
+// });
+
+app.use("/listings", listingsRouter);
+app.use("/listings/:id/review", reviewsRouter);
+app.use("/", userRouter);
+
+// app.use((req, res, next) => {
+//   req.time = new Date().toString();
+//   next();
+// });
 
 //root
-app.get(
-  "/",
-  wrapAsync(async (req, res) => {
-    res.send("root");
-  }),
-);
-//home
-app.get(
-  "/home",
-  wrapAsync(async (req, res) => {
-    let data = await Listings.find();
-    res.render("listings/allListings", { data });
-  }),
-);
-
-//eachlisting
-app.get(
-  "/listing/:id",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    let data = await Listings.findById(id);
-
-    res.render("listings/eachlisting", { data, id });
-  }),
-);
-
-// new listing form
-app.get(
-  "/listingNew",
-  wrapAsync((req, res) => {
-    console.log("this is the new listing form render");
-    res.render("listings/listingForm");
-  }),
-);
-
-//new listing
-
-app.post(
-  "/newListing",
-  wrapAsync(async (req, res) => {
-    // let result = listingSchema.validate(req.body);
-    // console.log(result);
-    console.log("this is the new listing adding route ");
-    let newListing = new Listings(req.body.Listings);
-    await newListing.save();
-    console.log(newListing);
-    res.redirect("/home");
-  }),
-);
-
-//deleteListing
-app.post(
-  "/deleteListing/:id",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    await Listings.findByIdAndDelete(id);
-    console.log("deleted");
-    res.redirect("/home");
-  }),
-);
-
-//editListings form
-app.get(
-  "/editListings/:id",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    let listing = await Listings.findById(id);
-
-    console.log("update from");
-    res.render("listings/updateForm", { listing, id });
-  }),
-);
-
-//updateListing
-app.post(
-  "/updateListing/:id",
-  wrapAsync(async (req, res) => {
-    let result = listingSchema.validate(req.body);
-    console.log(result);
-    let { id } = req.params;
-    await Listings.findByIdAndUpdate(id, { ...req.body.Listings });
-    console.log(req.body);
-    res.redirect("/home");
-  }),
-);
+// app.get(
+//   "/",
+//   wrapAsync(async (req, res) => {
+//     res.send("root");
+//   }),
+// );
 
 //Error handling middleware
 app.use((req, res, next) => {
@@ -151,18 +144,10 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   let { status = 500, message = "Somehting went wrong" } = err;
   // res.render("listings/error.ejs", { statusCode, message });
-  if (res.headersSent) {
-    return next(err);
-  }
 
-  res
-    .status(status)
-    .render("listings/error.ejs", { err }, (renderErr, html) => {
-      if (renderErr) {
-        // If the template fails to render, send a plain text error instead of crashing
-        return res.status(status).send(message);
-      }
-      res.send(html);
-    });
-  // res.status(status).render("listings/error.ejs", { err });
+  res.status(status).render("listings/error.ejs", { err });
+});
+
+app.listen(port, () => {
+  console.log(`Server running on port port ${port}`);
 });

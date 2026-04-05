@@ -3,12 +3,13 @@
 <div class="row mt-2">
   <div class="col-8">
     <h2>Edit Listing</h2>
-
+    <!-- /update -->
     <form
       method="post"
-      action="/updateListing/<%= id%>"
+      action="/listings/<%= id%>?_method=PATCH"
       class="needs-validation"
       novalidate
+      enctype="multipart/form-data"
     >
       <div class="mb-2">
         <label for="title" class="form-label">Title</label>
@@ -39,17 +40,19 @@
       </div>
 
       <div class="mb-2">
+        <img src="<%= originalImage %>" style="max-width: 250px" alt="" />
+      </div>
+
+      <div class="mb-2">
         <label for="image" class="form-label">Image-url</label>
-        <textarea
-          type="text"
+        <input
+          type="file"
           name="Listings[image][url]"
           id="image"
           placeholder="image-url"
           class="form-control"
-          required
-        >
-<%= listing.image.url%></textarea
-        >
+        />
+        <!-- <= listing.image.url%> -->
       </div>
 
       <div class="row">

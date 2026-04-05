@@ -84,7 +84,7 @@ body {
   border-radius: 0.5rem;
 }
 
-.card {
+.listing-card {
   border: none;
   display: flex;
   justify-content: center;
@@ -94,6 +94,12 @@ body {
 
 .card-body {
   padding: 0px;
+}
+
+.reviewComment {
+}
+
+.reviewRating {
 }
 
 .card-text {
@@ -116,8 +122,23 @@ body {
   color: white;
 }
 
+/* alerts */
+.alert-box {
+  display: flex;
+  justify-content: space-between; /* This pushes the X to the end */
+  align-items: center; /* This centers the X vertically */
+}
+
 /* .err_content {
   display: flex;
   justify-content: center;
   text-align: center;
 } */
+
+/* MAP */
+
+#map {
+  height: 400px;
+
+  width: 80vh;
+}
