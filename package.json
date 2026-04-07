@@ -1,6 +1,6 @@
 {
   "engines": {
-    "node":"22.18.0"
+    "node": "22.18.0"
   },
   "name": "mjrproject",
   "version": "1.0.0",
@@ -26,6 +26,7 @@
     "express-session": "^1.19.0",
     "joi": "^18.0.2",
     "method-override": "^3.0.0",
+    "mongodb": "^7.1.1",
     "mongoose": "^9.2.3",
     "multer": "^2.1.1",
     "multer-storage-cloudinary": "^4.0.0",

@@ -42,6 +42,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
 main()
   .then(() => {
     console.log("DB connected");
@@ -58,11 +59,12 @@ const store = MongoStore.create({
   touchAfter: 24 * 3600,
 });
 
-store.on("error", () => {
+store.on("error", (err) => {
   console.log("error in Mongo Session Store", err);
 });
 
 const sessionOptions = {
+  store,
   secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
@@ -91,11 +93,10 @@ app.use((req, res, next) => {
   next();
 });
 
-dns.setServers(["8.8.8.8", "1.1.1.1"]);
-
 //Mongo Connection
 async function main() {
   await mongoose.connect(dbUrl);
+  console.log("DBConnected");
 }
 
 // const token = (req, res, next) => {
