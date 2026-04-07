@@ -22,7 +22,7 @@ router
     saveRedirectUrl,
     passport.authenticate("local", {
       failureRedirect: "/login",
-      failureFlash: { type: "err" },
+      failureFlash: true,
     }),
     login,
   );
@@ -30,3 +30,5 @@ router
 router.get("/logout", logout);
 
 export default router;
+
+//  { type: "err" },

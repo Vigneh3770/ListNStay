@@ -27,10 +27,6 @@ export let createListing = async (req, res) => {
 
   let newListing = new Listings(req.body.Listings);
 
-  if (!response.body.features.length) {
-    req.flash("error", "Location not found. Please enter a valid address.");
-    return res.redirect("/listings/new");
-  }
   newListing.owner = req.user._id;
   let url = req.file.path;
   let filename = req.file.filename;

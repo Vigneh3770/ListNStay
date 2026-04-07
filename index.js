@@ -42,7 +42,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 
-dns.setServers(["8.8.8.8", "1.1.1.1"]);
+// dns.setServers(["8.8.8.8", "1.1.1.1"]);
 main()
   .then(() => {
     console.log("DB connected");
@@ -69,7 +69,6 @@ const sessionOptions = {
   resave: false,
   saveUninitialized: true,
   cookie: {
-    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
   },
@@ -90,6 +89,7 @@ app.use((req, res, next) => {
   res.locals.updation = req.flash("updation");
   res.locals.err = req.flash("err");
   res.locals.currUser = req.user;
+  console.log("Current User:", req.user);
   next();
 });
 

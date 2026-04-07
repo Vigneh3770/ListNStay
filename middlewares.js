@@ -55,7 +55,7 @@ export const isOwner = async (req, res, next) => {
   }
   next();
 };
-
+// locals.currUser
 export const isReviewOwner = async (req, res, next) => {
   let { id, reviewId } = req.params;
   let review = await Review.findById(reviewId);
