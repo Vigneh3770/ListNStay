@@ -4,6 +4,10 @@ const mapToken = process.env.MAP_TOKEN;
 
 const geocodingClient = mbxgeocoding({ accessToken: mapToken });
 
+// export let home = async (req, res) => {
+//   res.redirect("/listings");
+// };
+
 export let index = async (req, res) => {
   let data = await Listings.find();
   res.render("listings/allListings", { data });

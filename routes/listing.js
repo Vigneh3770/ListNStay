@@ -18,7 +18,8 @@ import {
 } from "../controllers/listings.js";
 
 router
-  .route("/")
+  .route("/", (ctx) => ctx.redirect("/listings"))
+
   .get(wrapAsync(index)) //home listing
   .post(
     isLoggedIn,
