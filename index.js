@@ -89,7 +89,7 @@ app.use((req, res, next) => {
   res.locals.updation = req.flash("updation");
   res.locals.err = req.flash("err");
   res.locals.currUser = req.user;
-  console.log("Current User:", req.user);
+
   next();
 });
 
@@ -119,7 +119,9 @@ async function main() {
 
 //   res.send(user);
 // });
-
+app.get("/", (req, res) => {
+  res.redirect("/listings");
+});
 app.use("/listings", listingsRouter);
 app.use("/listings/:id/review", reviewsRouter);
 app.use("/", userRouter);
